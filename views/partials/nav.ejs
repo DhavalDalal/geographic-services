@@ -1,0 +1,50 @@
+<nav class="navbar navbar-default navbar-static-top navbar-inverse">
+  <div class="container">
+    <ul class="nav navbar-nav">
+      <li class="active">
+        <a href="/"><span class="glyphicon glyphicon-home"></span> Home</a>
+      </li>
+      <!-- <li>
+        <a href="https://devcenter.heroku.com/articles/how-heroku-works"><span class="glyphicon glyphicon-user"></span> How Heroku Works</a>
+      </li> -->
+      
+    </ul>
+	  <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-info-sign"></span> Places Nearby<span class="caret"></span></a>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="<%= req.path %>/places/nearby/Mumbai">Mumbai (Bombay)</a></li>
+          <li><a href="<%= req.path %>/places/nearby/London">London</a></li>
+          <li><a href="<%= req.path %>/places/nearby/New York">New York</a></li>
+          <li><a href="<%= req.path %>/places/nearby/Cape Town">Cape Town</a></li>
+          <li><a href="<%= req.path %>/places/nearby/Tokyo">Tokyo</a></li>
+          <li class="divider"></li>
+          <li><a href="<%= req.path %>/places">Get All Places</a></li>
+          <li><a href="<%= req.path %>/places/nearby/UNKNOWN">Get Unknown Nearby Place</a></li>
+          <li><a href="<%= req.path %>/simulateException">Simulate Server Exception</a></li>
+        </ul>
+    </li>		
+	  <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-info-sign"></span> Weather<span class="caret"></span></a>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="<%= req.path %>/weather/IN/Mumbai">Mumbai (Bombay)</a></li>
+          <li><a href="<%= req.path %>/weather/UK/London">London</a></li>
+          <li><a href="<%= req.path %>/weather/US/New York">New York</a></li>
+          <li><a href="<%= req.path %>/weather/SA/Cape Town">Cape Town</a></li>
+          <li><a href="<%= req.path %>/weather/JP/Tokyo">Tokyo</a></li>
+          <li class="divider"></li>
+          <li><a href="<%= req.path %>/weather">Get Weather for All Cities</a></li>
+          <li><a href="<%= req.path %>/weather/UNKNOWN/CITY">Get Unknown City</a></li>
+          <li><a href="<%= req.path %>/simulateException">Simulate Server Exception</a></li>
+        </ul>
+    </li>
+	</ul>
+
+    <!-- <ul class="nav navbar-nav navbar-right">
+      <li class="navbar-right">
+        <a href="https://devcenter.heroku.com"><span class="glyphicon glyphicon-book"></span> Heroku Dev Center</a>
+      </li>
+    </ul> -->
+  </div>
+</nav>

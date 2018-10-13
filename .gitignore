@@ -1,0 +1,20 @@
+# Node build deps and artifacts
+node_modules
+npm-debug.log
+package-lock.json
+
+# Bower deps
+public/js/lib/
+
+# Bower deps
+# Local development
+*.env
+*.dev
+.DS_Store
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Redis
+dump.rdb
