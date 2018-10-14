@@ -37,11 +37,11 @@ function fullUrl(req, protocol) {
 	});
 }
 
-function sendWeather(res, latitude, longitude) {
+async function sendWeather(res, latitude, longitude) {
 	try {
     const tolerance = 0.5;
     console.info(`getWeatherBy(${latitude}, ${longitude}, ${tolerance})`);
-    sendJson(res, 200, weatherdata.getWeatherBy({lat:latitude, lon:longitude}, tolerance));
+    sendJson(res, 200, await weatherdata.getWeatherBy({lat:latitude, lon:longitude}, tolerance));
 	} catch (e) {
 		sendErrorJson(res, 404, e.message);
 	}
@@ -69,24 +69,25 @@ let app = express()
       sendWeather(res, latitude, longitude);
     } else {
       console.info("Got req for weather at all cities...");
-      sendJson(res, 200, weatherdata.getAllCitiesWeather());
+      weatherdata.getAllCitiesWeather()
+        .then(result => sendJson(res, 200, result));
     }
   })
-  .get('/weather/:city', (req, res) => {
+  .get('/weather/:city', async (req, res) => {
     const city = req.params.city;
 		console.info(`Got req for ${city}...`);
 		try {
-			sendJson(res, 200, weatherdata.getWeather(city));
+			sendJson(res, 200, await weatherdata.getWeather(city));
 		} catch (e) {
 			sendErrorJson(res, 404, e.message);
 		}
   })
-	.get('/weather/:country/:city', (req, res) => {
+	.get('/weather/:country/:city', async (req, res) => {
 		const country = req.params.country;
 		const city = req.params.city;
 		console.info(`Got req for ${city},${country}...`);
 		try {
-			sendJson(res, 200, weatherdata.getWeather(city, country));
+			sendJson(res, 200, await weatherdata.getWeather(city, country));
 		} catch (e) {
 			sendErrorJson(res, 404, e.message);
 		}

@@ -1,3 +1,5 @@
+let delayInMillis = process.env.DELAY_IN_MILLIS || 3000;
+
 // console.debug(`Weather Data...`);
 const CITIES = [{
   country: 'IN',
@@ -40,29 +42,42 @@ const randomNumberBetween = function(min, max, decimalPlaces = 0) {
 		return Number.parseFloat(decimalValue.toFixed(decimalPlaces));
 };
 
+function executeAfter(timeInMillis, fn, ...args) {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => resolve(fn(args)), timeInMillis);
+	});
+}
+
 const getAllCitiesWeather = function() {
 	console.log(`getAllCitiesWeather()`);
-	const cities = [];
-	CITIES.forEach(city => {
-		city.temperature.value = randomNumberBetween(city.temperature.low, city.temperature.high);
-		cities.push(city);
-	});
-	return cities;
+  return executeAfter(delayInMillis, () => {
+  	const cities = [];
+  	CITIES.forEach(city => {
+  		city.temperature.value = randomNumberBetween(city.temperature.low, city.temperature.high);
+  		cities.push(city);
+  	});
+  	return cities;
+  });
 };
 
 const getWeather = function(cityName, countryCode) {
-  const found = getAllCitiesWeather().filter(city => {
-    if (cityName && countryCode) 
-      return city.name === cityName && city.country === countryCode;
-    if (cityName) 
-      return city.name === cityName;
-  });
-  if (found.length == 0)
-    throw new Error(`${city}, ${country} Not found!`);
-	else if (found.length == 1)
-		return found[0];
-  else
-    return found;
+  console.log(`getWeather(${cityName}, ${countryCode})`);
+  return getAllCitiesWeather()
+    .then(cities => {
+      return cities.filter(city => {
+        if (cityName && countryCode) 
+          return city.name === cityName && city.country === countryCode;
+        if (cityName) 
+          return city.name === cityName;
+      });
+    }).then(found => {
+      if (found.length == 0)
+        throw new Error(`${city}, ${country} Not found!`);
+  	  else if (found.length == 1)
+  		  return found[0];
+      else
+        return found;
+    });
 };
 
 const isLocationWithin = 
@@ -76,15 +91,22 @@ function isWithin(actual, expected, tolerance) {
 }
 
 const getWeatherBy = function(expected = {lat:latitude, lon:longitude}, tolerance = 0.5) {
-  const found = getAllCitiesWeather().filter(city => isLocationWithin(city.location, expected, tolerance))[0];
-	if (found)
-		return found;
-	else
-		throw new Error(`Latitude: ${expected.lat}, Longitude: ${expected.lon} Not found within ${tolerance} tolerance!`);
+  console.log(`getWeatherBy({${expected.lat}, ${expected.lon}}, ${tolerance})`);
+  return getAllCitiesWeather()
+    .then(cities => 
+      cities.filter(city => isLocationWithin(city.location, expected, tolerance))
+    ).then(found => {
+      if (found.length == 0)
+        throw new Error(`Latitude: ${expected.lat}, Longitude: ${expected.lon} Not found within ${tolerance} tolerance!`);
+  	  else if (found.length == 1)
+  		  return found[0];
+      else
+        return found;
+    });
 };
 
 module.exports = {
-	getWeather: getWeather,
 	getAllCitiesWeather: getAllCitiesWeather,
+	getWeather: getWeather,
   getWeatherBy:getWeatherBy
 }
