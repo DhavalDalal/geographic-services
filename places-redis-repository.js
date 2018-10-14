@@ -18,7 +18,12 @@ const redis = new Redis({
   password: redis_password,
   db: 0
 });
-console.info(`Connected to Redis redis://${redis_host}:${redis_port}...`);
+
+redis.on('error', (err) => {
+  console.info(`Failed to connect to Redis at URL redis://${redis_host}:${redis_port}...${err.message}`);
+	  console.info("Please make sure Redis Server is running at the specified URL...I will auto-connect!");
+});
+
 
 function flattenDeep(array) {
    return array.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
