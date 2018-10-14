@@ -53,7 +53,7 @@ let app = express()
 	.use('/public', express.static(__dirname + '/public'))
 	.set('views', path.join(__dirname, 'views'))
 	.set('view engine', 'ejs')
-	.get('/', (req, res) => {
+  .get('/', (req, res) => {
 		res.render('pages/index', {
 			req: fullUrl(req)
 		});
@@ -102,7 +102,7 @@ let app = express()
         .then(result => sendJson(res, 200, result))
         .catch(error => sendErrorJson(res, 404, error.message));
     } else {
-      sendErrorJson(res, 400, 'use URL with query /places/nearby?lat=xxx.yyy&lon=xxx.yyy&radius=rrr^&unit=km');
+      sendErrorJson(res, 400, 'use URL with query /places/nearby?lat=xxx.yyy&lon=xxx.yyy&radius=rrr&unit=[m|km|ft|mi]');
     }
   })
   .get('/places/nearby/:place', (req, res, next) => {
