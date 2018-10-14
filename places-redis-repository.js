@@ -21,12 +21,19 @@ const redis = new Redis({
 
 redis.on('error', (err) => {
   console.info(`Failed to connect to Redis at URL redis://${redis_host}:${redis_port}...${err.message}`);
-	  console.info("Please make sure Redis Server is running at the specified URL...I will auto-connect!");
+  console.info("Please make sure Redis Server is running at the specified URL...I will auto-connect!");
 });
 
+const delayInMillis = process.env.DELAY_IN_MILLIS || 3000;
+
+function delay(timeInMillis, result) {
+  return new Promise((resolve, reject) => {
+	setTimeout(() => resolve(result), timeInMillis);
+  });
+}
 
 function flattenDeep(array) {
-   return array.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
+  return array.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
 }
 
 function uniqueBy(array, key) {
@@ -74,9 +81,10 @@ Redis.Command.setReplyTransformer('hgetall', function (result) {
 });
 
 const getAllPlaces = function() {
-	console.log(`getAllPlaces()`);
+  console.log(`getAllPlaces()`);
   return redis.keys("location-*")
-    .then(keys => Promise.all(keys.map(key => redis.hgetall(key))));
+    .then(keys => Promise.all(keys.map(key => redis.hgetall(key))))
+    .then(result => delay(delayInMillis, result));
 }
 
 const getPlacesNearby = function(placeName, withinRadius = 10, unit = 'km') {
@@ -96,11 +104,12 @@ const getPlacesNearby = function(placeName, withinRadius = 10, unit = 'km') {
 const getPlacesAround = function(latitude, longitude, withinRadius = 10, unit = 'km') {
   console.log(`getPlacesAround(${latitude},${longitude},${withinRadius},${unit})`);
   return redis.georadius("geo-locations", longitude, latitude, withinRadius, unit)
-    .then(keys => Promise.all(keys.map(key => redis.hgetall(key))));
+    .then(keys => Promise.all(keys.map(key => redis.hgetall(key))))
+    .then(result => delay(delayInMillis, result));
 };
 
 module.exports = {
-	getPlacesAround: getPlacesAround,
-	getPlacesNearby: getPlacesNearby,
-	getAllPlaces: getAllPlaces
+  getPlacesAround: getPlacesAround,
+  getPlacesNearby: getPlacesNearby,
+  getAllPlaces: getAllPlaces
 }

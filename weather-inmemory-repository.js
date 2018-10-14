@@ -1,4 +1,4 @@
-let delayInMillis = process.env.DELAY_IN_MILLIS || 3000;
+const delayInMillis = process.env.DELAY_IN_MILLIS || 3000;
 
 // console.debug(`Weather Data...`);
 const CITIES = [{
@@ -35,26 +35,26 @@ const CITIES = [{
 ];
 
 const randomNumberBetween = function(min, max, decimalPlaces = 0) {
-	let decimalValue = (Math.random() * (max - min)) + min;
-	if (decimalPlaces === 0)
-		return Number.parseInt(decimalValue.toFixed(decimalPlaces));
-	else
-		return Number.parseFloat(decimalValue.toFixed(decimalPlaces));
+  const decimalValue = (Math.random() * (max - min)) + min;
+  if (decimalPlaces === 0)
+	return Number.parseInt(decimalValue.toFixed(decimalPlaces));
+  else
+	return Number.parseFloat(decimalValue.toFixed(decimalPlaces));
 };
 
 function executeAfter(timeInMillis, fn, ...args) {
-	return new Promise((resolve, reject) => {
-		setTimeout(() => resolve(fn(args)), timeInMillis);
-	});
+  return new Promise((resolve, reject) => {
+	setTimeout(() => resolve(fn(args)), timeInMillis);
+  });
 }
 
 const getAllCitiesWeather = function() {
-	console.log(`getAllCitiesWeather()`);
+  console.log(`getAllCitiesWeather()`);
   return executeAfter(delayInMillis, () => {
   	const cities = [];
   	CITIES.forEach(city => {
-  		city.temperature.value = randomNumberBetween(city.temperature.low, city.temperature.high);
-  		cities.push(city);
+      city.temperature.value = randomNumberBetween(city.temperature.low, city.temperature.high);
+      cities.push(city);
   	});
   	return cities;
   });
@@ -106,7 +106,7 @@ const getWeatherBy = function(expected = {lat:latitude, lon:longitude}, toleranc
 };
 
 module.exports = {
-	getAllCitiesWeather: getAllCitiesWeather,
-	getWeather: getWeather,
+  getAllCitiesWeather: getAllCitiesWeather,
+  getWeather: getWeather,
   getWeatherBy:getWeatherBy
 }
