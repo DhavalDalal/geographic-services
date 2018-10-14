@@ -6,16 +6,50 @@ This application supports the [Getting Started with Node on Heroku](https://devc
 
 ## Running Locally
 
-Make sure you have [Node.js](http://nodejs.org/) and the [Heroku CLI](https://cli.heroku.com/) installed.
+Make sure you have [Node.js](http://nodejs.org/), the [Heroku CLI](https://cli.heroku.com/) and, the [Redis Datastore](https://redis.io/download) installed.
 
 ```sh
 $ git clone git@github.com:DhavalDalal/geographic-services.git # or clone your own fork
-$ cd stock-prices
+$ cd geographic-services
 $ npm install
-$ npm start
 ```
 
-Your app should now be running on [localhost:6000](http://localhost:6000/).
+* **Weather Service** - Locally is configured to send a response after a delay of 3 seconds (on purpose)
+* **Nearby Places Service** - Requires Redis to be run locally. Follow the steps below to load it with data:
+  * Start the Redis Server
+  
+    ```sh
+    $ redis-server
+    ```
+  * In another terminal window, start the Redis Client and check whether it connects to the server or not.
+  
+    ```sh
+    $ redis-cli
+    ```
+  * In the third terminal, Run the script loadPlacesInRedis.sh
+  
+    ```sh
+    $ ./loadPlacesInRedis.sh
+
+    Loading places data....
+    Connecting to Redis redis://localhost:6379...
+    Cleaned Keys =  0
+    Records in Keys =  { locations: 31, 'geo-locations': 31 }
+    Result =  undefined
+    *** DONE ***
+    ```
+  * Finally, start the geographic-services app.
+
+    ```sh
+    $ npm start
+    > geographic-services@0.3.0 start /Users/dhavald/Documents/workspace/geographic-services
+    > node index.js
+    Connecting to Redis redis://localhost:6379...
+    Connected to Redis redis://localhost:6379...
+    Listening on 8000
+    ```  
+
+Your app should now be running on [localhost:8000](http://localhost:8000/).
 
 ## Deploying to Heroku
 
