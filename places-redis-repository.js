@@ -1,5 +1,36 @@
 const Redis = require('ioredis');
-const redis = new Redis(6379, 'localhost');
+
+let redis_host = 'localhost';
+let redis_port = 6379;
+let redis_password = '';
+
+if (process.env.REDIS_URL && process.env.REDIS_PORT && process.env.REDIS_PASSWORD) {
+  redis_host = process.env.REDIS_URL;
+  redis_port = process.env.REDIS_PORT;
+  redis_password = process.env.REDIS_PASSWORD;
+}
+
+console.info(`Connecting to Redis redis://${redis_host}:${redis_port}...`);
+const redis = new Redis({
+  port: redis_port,  
+  host: redis_host,  
+  family: 4,  // 4 (IPv4) or 6 (IPv6)
+  password: redis_password,
+  db: 0
+});
+console.info(`Connected to Redis redis://${redis_host}:${redis_port}...`);
+
+function flattenDeep(array) {
+   return array.reduce((acc, val) => Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val), []);
+}
+
+function uniqueBy(array, key) {
+  const seen = new Set();
+  return array.filter(item => {
+    var k = key(item);
+    return seen.has(k) ? false : seen.add(k);
+  });
+}
 
 // console.debug(`Nearby Places Data...`);
 function strMapToObj(strMap) {
@@ -37,16 +68,6 @@ Redis.Command.setReplyTransformer('hgetall', function (result) {
   return result;
 });
 
-const randomNumberBetween = function(min, max, decimalPlaces = 0) {
-	// return Math.floor(Math.random() * (max - min + 1) + min);
-	// return decimal value
-	let decimalValue = (Math.random() * (max - min)) + min;
-	if (decimalPlaces === 0)
-		return Number.parseInt(decimalValue.toFixed(decimalPlaces));
-	else
-		return Number.parseFloat(decimalValue.toFixed(decimalPlaces));
-};
-
 const getAllPlaces = function() {
 	console.log(`getAllPlaces()`);
   return redis.keys("location-*")
@@ -61,14 +82,15 @@ const getPlacesNearby = function(placeName, withinRadius = 10, unit = 'km') {
       if (places.length == 0)
         throw new Error(`${placeName} Not Found!`);
       else {
-        return Promise.all(places.map(place => getPlacesAround(place.latitude, place.longitude, withinRadius, unit)));
+        return Promise.all(places.map(place => getPlacesAround(place.latitude, place.longitude, withinRadius, unit)))
+          .then(results => uniqueBy(flattenDeep(results), place => place.id));
       }
     });
 };
 
 const getPlacesAround = function(latitude, longitude, withinRadius = 10, unit = 'km') {
   console.log(`getPlacesAround(${latitude},${longitude},${withinRadius},${unit})`);
-  return redis.georadius("geo-locations", latitude, longitude, withinRadius, unit)
+  return redis.georadius("geo-locations", longitude, latitude, withinRadius, unit)
     .then(keys => Promise.all(keys.map(key => redis.hgetall(key))));
 };
 

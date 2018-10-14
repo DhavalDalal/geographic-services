@@ -2,7 +2,25 @@
 //
 // commands.list.filter(command => command.includes("del")).forEach(command => console.log(command));
 const Redis = require('ioredis');
-const redis = new Redis(6379, 'localhost');
+
+let redis_host = 'localhost';
+let redis_port = 6379;
+let redis_password = '';
+
+if (process.env.REDIS_URL && process.env.REDIS_PORT && process.env.REDIS_PASSWORD) {
+  redis_host = process.env.REDIS_URL;
+  redis_port = process.env.REDIS_PORT;
+  redis_password = process.env.REDIS_PASSWORD;
+}
+
+console.info(`Connecting to Redis redis://${redis_host}:${redis_port}...`);
+const redis = new Redis({
+  port: redis_port,  
+  host: redis_host,  
+  family: 4,  // 4 (IPv4) or 6 (IPv6)
+  password: redis_password,
+  db: 0
+});
 
 const PLACES = [
 {
@@ -192,7 +210,7 @@ const PLACES = [
   state: "Tokyo",
   country: "JP",
   type: "Tower",
-  latitude: 35.710064, 
+  latitude: 35.710064,
   longitude: 139.810699,
   createdOn: null
 },{
@@ -334,7 +352,7 @@ function loadPlacesData(placesArray, redis) {
   }).then(places => {
     const promises = places.map(place => {
       const placeId = `location-${place.id}`;
-      return redis.geoadd("geo-locations", place.latitude, place.longitude, placeId)
+      return redis.geoadd("geo-locations", place.longitude, place.latitude, placeId)
         .then(() => redis.hmset(placeId, place));
     });
     return Promise.all(promises);
