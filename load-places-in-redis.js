@@ -35,6 +35,16 @@ const PLACES = [
   createdOn: null
 },{
   id:"0",
+  name: "Mumbai International Airport (CSIA)",
+  city: "Mumbai",
+  state: "Maharashtra",
+  country: "IN",
+  type: "Airport",
+  latitude: 19.091964,
+  longitude: 72.856914,
+  createdOn: null
+},{
+  id:"0",
   name: "Navi Mumbai (New Bombay)",
   city: "Navi Mumbai",
   state: "Maharashtra",
